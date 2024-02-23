@@ -1,20 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using WorkingWithHostedService.Models;
+using WorkingWithHostedService.Services;
 
 namespace WorkingWithHostedService.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly BackgroundServiceT teste;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, BackgroundServiceT tt)
         {
             _logger = logger;
+            teste = tt;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index(CancellationToken token)
         {
+            await teste.StartAsync(token);
             return View();
         }
 

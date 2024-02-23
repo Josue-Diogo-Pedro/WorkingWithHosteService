@@ -1,6 +1,6 @@
 ﻿namespace WorkingWithHostedService.Services;
 
-public abstract class BackgroundService : IHostedService
+public abstract class BackgroundServiceT : IHostedService
 {
     private Task _executingTask;
     private readonly CancellationTokenSource _stoppingCts = new CancellationTokenSource();
@@ -16,6 +16,7 @@ public abstract class BackgroundService : IHostedService
             return _executingTask;
         }
         // de outra forma ela esta rodando
+        Console.WriteLine("Teste");
         return Task.CompletedTask;
     }
 

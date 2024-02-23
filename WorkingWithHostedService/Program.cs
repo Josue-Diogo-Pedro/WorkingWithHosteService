@@ -1,7 +1,11 @@
+using WorkingWithHostedService.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+//builder.Services.AddSingleton<BackgroundServiceT>();
+builder.Services.AddHostedService<BackgroundServiceT>();
 
 var app = builder.Build();
 
