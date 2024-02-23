@@ -8,17 +8,14 @@ namespace WorkingWithHostedService.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly BackgroundServiceT teste;
 
-        public HomeController(ILogger<HomeController> logger, BackgroundServiceT tt)
+        public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
-            teste = tt;
         }
 
-        public async Task<IActionResult> Index(CancellationToken token)
+        public IActionResult Index()
         {
-            await teste.StartAsync(token);
             return View();
         }
 
