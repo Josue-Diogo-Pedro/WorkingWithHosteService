@@ -2,13 +2,51 @@
 
 public abstract class BackgroundService : IHostedService
 {
-    public Task StartAsync(CancellationToken cancellationToken)
+    private Task _executingTask;
+    private readonly CancellationTokenSource _stoppingCts = new CancellationTokenSource();
+
+    public virtual Task StartAsync(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        // Armazena a tarefa que estamos executando
+        _executingTask = ExecuteAsync(_stoppingCts.Token);
+        // se a tarefa foi concluida então retorna,
+        // isto causa o cancelamento e a falha do chamados
+        if (_executingTask.IsCompleted)
+        {
+            return _executingTask;
+        }
+        // de outra forma ela esta rodando
+        return Task.CompletedTask;
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
+    public virtual async Task StopAsync(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        // Para a chamada sem iniciar
+        if (_executingTask == null)
+        {
+            return;
+        }
+        try
+        {
+            // Sinaliza o cancelamento para o método
+            _stoppingCts.Cancel();
+        }
+        finally
+        {
+            // Aguarde ate que a tarefa termine ou que pare
+            await Task.WhenAny(_executingTask, Task.Delay(Timeout.Infinite, cancellationToken));
+        }
     }
+
+    protected virtual async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        do
+        {
+            await Process();
+            //aguarde 5 segundos
+            await Task.Delay(5000, stoppingToken);
+        }
+        while (!stoppingToken.IsCancellationRequested);
+    }
+    protected abstract Task Process();
 }
