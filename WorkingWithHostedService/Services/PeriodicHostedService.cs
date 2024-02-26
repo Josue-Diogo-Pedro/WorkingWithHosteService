@@ -3,13 +3,16 @@
 public class PeriodicHostedService : BackgroundService
 {
     private readonly ILogger<PeriodicHostedService> _logger;
-
-    public PeriodicHostedService(ILogger<PeriodicHostedService> logger)
-    {
-        _logger = logger;
-    }
+    private readonly SettingService _settingService;
 
     private readonly TimeSpan _period = TimeSpan.FromSeconds(5);
+    private int _executionCount = 0;
+
+    public PeriodicHostedService(ILogger<PeriodicHostedService> logger, SettingService settingService)
+    {
+        _logger = logger;
+        _settingService = settingService;
+    }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
