@@ -1,3 +1,4 @@
+using WorkingWithHostedService.Extensions;
 using WorkingWithHostedService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -5,7 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 //builder.Services.AddSingleton<BackgroundServiceT>();
-builder.Services.AddHostedService<BackgroundServiceT>();
+//builder.Services.AddHostedService<BackgroundServiceT>();
+
+builder.Services.AddBusiness();
 
 var app = builder.Build();
 
