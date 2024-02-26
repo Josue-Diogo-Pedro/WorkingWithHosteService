@@ -8,19 +8,23 @@ namespace WorkingWithHostedService.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly SettingService _settingService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, SettingService settingService)
         {
             _logger = logger;
+            _settingService = settingService;
         }
 
         public IActionResult Index()
         {
+            _settingService.IsEnabled = false;
             return View();
         }
 
         public IActionResult Privacy()
         {
+            _settingService.IsEnabled = true;
             return View();
         }
 
