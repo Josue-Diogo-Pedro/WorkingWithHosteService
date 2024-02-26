@@ -5,13 +5,15 @@ public class PeriodicHostedService : BackgroundService
     private readonly ILogger<PeriodicHostedService> _logger;
     private readonly SettingService _settingService;
 
-    private readonly TimeSpan _period = TimeSpan.FromSeconds(5);
     private int _executionCount = 0;
+    private readonly TimeSpan _period = TimeSpan.FromSeconds(5);
+    private readonly IServiceScopeFactory _factory;
 
-    public PeriodicHostedService(ILogger<PeriodicHostedService> logger, SettingService settingService)
+    public PeriodicHostedService(ILogger<PeriodicHostedService> logger, SettingService settingService, IServiceScopeFactory factory)
     {
         _logger = logger;
         _settingService = settingService;
+        _factory = factory;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -22,7 +24,18 @@ public class PeriodicHostedService : BackgroundService
         {
             try
             {
-
+                if (_settingService.IsEnabled)
+                {
+                    await using AsyncServiceScope asyncScope = _factory.CreateAsyncScope();
+                    SampleService sampleService = asyncScope.ServiceProvider.GetRequiredService<SampleService>();
+                    await sampleService.DoSomethingAsync();
+                    _executionCount++;
+                    _logger.LogInformation($"Executed PeriodicHostedService - Count: {_executionCount}");
+                }
+                else
+                {
+                    _logger.LogInformation("Skipped PeriodicHostedService");
+                }
             }
             catch (Exception ex)
             {
